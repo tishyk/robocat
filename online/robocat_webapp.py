@@ -15,11 +15,12 @@ records = [
 	'reminder': datetime.datetime.now(),
 	'version': 1,
 	'sync': True,
-	'title': u'Robocat task #1. Robocat',
+	'title': u'Robocat task #1. Avocato',
         'description': u"""Robocat, by Andrew Clements
 	This seven page activity works with the story Robocat, by Andrew Clements.
 	The story is also included. The focus still for this activity is reality vs. realism.
-	Vocabulary questions and general comprehension questions are also included.""", 
+	Vocabulary questions and general comprehension questions are also included.
+	https://final-space.fandom.com/wiki/Avocato""", 
 
     },
     {
