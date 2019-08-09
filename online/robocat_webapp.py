@@ -72,7 +72,7 @@ def get_record(record_id):
     return jsonify({'record': record[0]})
 
 
-@app.route('/memo/api/v1.0/records/', methods=['POST'])
+@app.route('/memo/api/v1.0/records', methods=['POST'])
 def create_record():
     if not request.json or 'date' not in request.json:
         abort(400)
