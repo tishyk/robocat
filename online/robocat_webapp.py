@@ -56,7 +56,7 @@ records = [
 
 
 def make_public_record(record):
-    record['uri'] = url_for('get_record', record_id=record.get('id', 0)), _external=True)
+    record['uri'] = url_for('get_record', record_id=record.get('id', 0), _external=True)
     record.pop('id')
     return record
 
