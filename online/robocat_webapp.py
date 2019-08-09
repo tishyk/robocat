@@ -57,6 +57,7 @@ records = [
 
 @app.route('/memo/api/v1.0/records', methods=['GET'])
 def get_records():
+    # Test it with "curl -i https://robotcat.pythonanywhere.com/memo/api/v1.0/records"	
     return jsonify({'records': records})
 
 @app.route('/')
