@@ -2,7 +2,9 @@
 
 import datetime
 from flask import Flask, jsonify, abort, make_response, request, url_for
+from flask_httpauth import HTTPBasicAuth
 
+auth = HTTPBasicAuth()
 app = Flask(__name__)
 
 records = [
@@ -55,6 +57,13 @@ records = [
 ]
 
 
+@auth.get_password
+def get_password(username):
+    if username == 'robocat':
+        return 'robocat_password'
+    return None
+
+
 def make_public_record(record):
     record['uri'] = url_for('get_record', record_id=record.get('id', 0), _external=True)
     record.pop('id')
@@ -72,11 +81,10 @@ def hello_world():
 #     return jsonify({'records': records})
 
 @app.route('/memo/api/v1.0/records', methods=['GET'])
+@auth.login_required    #curl -u robocat:robocat_password -i https://robotcat.pythonanywhere.com/memo/api/v1.0/records
 def get_records():
     # Test it with "curl -i https://robotcat.pythonanywhere.com/memo/api/v1.0/records"
     return jsonify({'records': [make_public_record(record) for record in records]})
-
-
 
 
 @app.route('/memo/api/v1.0/records/<int:record_id>', methods=['GET'])
@@ -136,15 +144,19 @@ def delete_task(record_id):
     return jsonify({'result': True})
 
 
-@app.errorhandler(404)
-def not_found(error):
-    return make_response(jsonify({'error': 'Not found'}), 404)
-
-
 @app.errorhandler(400)
 def request_validation(error):
     return make_response(jsonify({'error': 'JSON validation failed! {}'.format(error)}), 400)
 
 
-if __name__ == "__main__":
-    app.run(debug=True)
+@auth.error_handler
+def unauthorized():
+    return make_response(jsonify({'error': 'Unauthorized access'}), 401)
+
+
+@app.errorhandler(404)
+def not_found(error):
+    return make_response(jsonify({'error': 'Not found'}), 404)
+
+    if __name__ == "__main__":
+        app.run(debug=True)
