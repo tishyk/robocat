@@ -1,7 +1,7 @@
 # A very simple Flask Hello World app for you to get started with...
 
 import datetime
-from flask import Flask, jsonify, abort, make_response, request
+from flask import Flask, jsonify, abort, make_response, request, url_for
 
 app = Flask(__name__)
 
@@ -55,14 +55,28 @@ records = [
 ]
 
 
+def make_public_record(record):
+    record['uri'] = url_for('get_record', record_id=record.get('id', 0)), _external=True)
+    record.pop('id')
+    return record
+
+
 @app.route('/')
 def hello_world():
     return 'Hello from RoboCat app!'
 
+
+# @app.route('/memo/api/v1.0/records', methods=['GET'])
+# def get_records():
+#     # Test it with "curl -i https://robotcat.pythonanywhere.com/memo/api/v1.0/records"
+#     return jsonify({'records': records})
+
 @app.route('/memo/api/v1.0/records', methods=['GET'])
 def get_records():
     # Test it with "curl -i https://robotcat.pythonanywhere.com/memo/api/v1.0/records"
-    return jsonify({'records': records})
+    return jsonify({'records': [make_public_record(record) for record in records]})
+
+
 
 
 @app.route('/memo/api/v1.0/records/<int:record_id>', methods=['GET'])
@@ -75,13 +89,14 @@ def get_record(record_id):
 
 @app.route('/memo/api/v1.0/records', methods=['POST'])
 def create_record():
-    # Testing curl -i -H "Content-Type: application/json" -X POST -d '{"date":"2019-08-09"}'  http://robotcat.pythonanywhere.com/memo/api/v1.0/records
+    # Testing curl -i -H "Content-Type: application/json" -X POST -d '{"date":"2019-08-09"}' \
+    #  http://robotcat.pythonanywhere.com/memo/api/v1.0/records
     if not request.json or not request.json.get('date'):
         abort(400)
     record_id = max(records, key=lambda rec: rec.get('id')).get('id', 0) + 1
     record = {'id': record_id,
               'date': request.json['date'],
-              'time': datetime.datetime.now().strftime('%H:%M:%S'), # Server creation time
+              'time': datetime.datetime.now().strftime('%H:%M:%S'),  # Server creation time
               'color': u'red',
               'flag': False,
               'reminder': datetime.datetime.now(),
@@ -125,9 +140,11 @@ def delete_task(record_id):
 def not_found(error):
     return make_response(jsonify({'error': 'Not found'}), 404)
 
+
 @app.errorhandler(400)
 def request_validation(error):
     return make_response(jsonify({'error': 'JSON validation failed! {}'.format(error)}), 400)
+
 
 if __name__ == "__main__":
     app.run(debug=True)
