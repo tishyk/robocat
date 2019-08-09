@@ -74,6 +74,7 @@ def get_record(record_id):
 
 @app.route('/memo/api/v1.0/records', methods=['POST'])
 def create_record():
+    # Testing curl -i -H "Content-Type: application/json" -X POST -d '{"date":"2019-08-09"}'  http://robotcat.pythonanywhere.com/memo/api/v1.0/records
     if not request.json or not request.json.get('date'):
         abort(400)
     record_id = max(records, key=lambda rec: rec.get('id')).get('id', 0) + 1
