@@ -89,8 +89,35 @@ def create_record():
               'title': u'Robocat task #{}'.format(record_id),
               'description': u"""Robocat Description"""
               }
+    records.append(record)
     return jsonify({'record': record}), 201
 
+
+@app.route('/memo/api/v1.0/records/<int:record_id>', methods=['PUT'])
+def update_task(record_id):
+    record = [rec for rec in records if rec['id'] == record_id]
+    if not any(record):
+        abort(404)
+    if not request.json:
+        abort(400)
+    if 'title' in request.json and not isinstance(request.json['title'], str):
+        abort(400)
+    if 'description' in request.json and isinstance(request.json['description'], str):
+        abort(400)
+    # Add verification for incoming json data
+    for rec in record[0]:
+        rec_value = request.json.setdefault(rec, record[0][rec])
+        record[0][rec] = rec_value
+    return jsonify({'record': record[0]})
+
+
+@app.route('/memo/api/v1.0/records/<int:record_id>', methods=['DELETE'])
+def delete_task(record_id):
+    task = [rec for rec in records if rec['id'] == record_id]
+    if not any(task):
+        abort(404)
+    records.remove(task[0])
+    return jsonify({'result': True})
 
 
 @app.errorhandler(404)
