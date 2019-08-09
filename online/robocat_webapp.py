@@ -74,7 +74,7 @@ def get_record(record_id):
 
 @app.route('/memo/api/v1.0/records', methods=['POST'])
 def create_record():
-    if not request.json or 'date' not in request.json:
+    if not request.json or not request.json.get('date'):
         abort(400)
     record_id = max(records, key=lambda rec: rec.get('id')) + 1
     record = {'id': record_id,
