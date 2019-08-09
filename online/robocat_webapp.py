@@ -2,7 +2,7 @@
 # A very simple Flask Hello World app for you to get started with...
 
 import datetime
-from flask import Flask, jsonify
+from flask import Flask, jsonify, abort
 
 app = Flask(__name__)
 
@@ -59,6 +59,15 @@ records = [
 def get_records():
     # Test it with "curl -i https://robotcat.pythonanywhere.com/memo/api/v1.0/records"	
     return jsonify({'records': records})
+
+@app.route('/memo/api/v1.0/records/<int:record_id>', methods=['GET'])
+def get_task(record_id):
+    record = [record for record in records if record['id'] == record_id]
+    if len(record) == 0:
+        abort(404)
+    return jsonify({'task': task[0]})
+
+
 
 @app.route('/')
 def hello_world():
