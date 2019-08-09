@@ -76,10 +76,18 @@ def get_record(record_id):
 def create_record():
     if not request.json or 'date' not in request.json:
         abort(400)
-    record = request.json
-    record['id'] = max(records, key=lambda rec: rec.get('id')) + 1
-    for default_key in records[0]:
-        record.setdefault(default_key, records[0][default_key])
+    record_id = max(records, key=lambda rec: rec.get('id')) + 1
+    record = {'id': record_id,
+              'date': request.json['date'],
+              'time': datetime.datetime.now().strftime('%H:%M:%S'), # Server creation time
+              'color': u'red',
+              'flag': False,
+              'reminder': datetime.datetime.now(),
+              'version': 1,
+              'sync': True,
+              'title': u'Robocat task #{}'.format(record_id),
+              'description': u"""Robocat Description"""
+              }
     return jsonify({'record': record}), 201
 
 
