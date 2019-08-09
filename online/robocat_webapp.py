@@ -76,7 +76,7 @@ def get_record(record_id):
 def create_record():
     if not request.json or not request.json.get('date'):
         abort(400)
-    record_id = max(records, key=lambda rec: rec.get('id')) + 1
+    record_id = max(records, key=lambda rec: rec.get('id')).get('id', 0) + 1
     record = {'id': record_id,
               'date': request.json['date'],
               'time': datetime.datetime.now().strftime('%H:%M:%S'), # Server creation time
