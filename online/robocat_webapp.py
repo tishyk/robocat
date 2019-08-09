@@ -1,4 +1,3 @@
-
 # A very simple Flask Hello World app for you to get started with...
 
 import datetime
@@ -10,44 +9,44 @@ records = [
     {
         'id': 1,
         'date': datetime.date.today().strftime('%Y-%m-%d'),
-	'time': datetime.datetime.now().strftime('%H:%M:%S'),
-	'color': u'red',
-	'flag': False,
-	'reminder': datetime.datetime.now(),
-	'version': 1,
-	'sync': True,
-	'title': u'Robocat task #1. Avocato',
+        'time': datetime.datetime.now().strftime('%H:%M:%S'),
+        'color': u'red',
+        'flag': False,
+        'reminder': datetime.datetime.now(),
+        'version': 1,
+        'sync': True,
+        'title': u'Robocat task #1. Avocato',
         'description': u"""Robocat, by Andrew Clements
 	This seven page activity works with the story Robocat, by Andrew Clements.
 	The story is also included. The focus still for this activity is reality vs. realism.
 	Vocabulary questions and general comprehension questions are also included.
-	https://final-space.fandom.com/wiki/Avocato""", 
+	https://final-space.fandom.com/wiki/Avocato""",
 
     },
     {
         'id': 2,
         'date': datetime.date.today().strftime('%Y-%m-%d'),
-	'time': datetime.datetime.now().strftime('%H:%M:%S'),
-	'color': u'green',
-	'flag': False,
-	'reminder': datetime.datetime.now(),
-	'version': 2,
-	'sync': False,
-	'title': u'Robocat task #2. The Dragon of Krakow',
+        'time': datetime.datetime.now().strftime('%H:%M:%S'),
+        'color': u'green',
+        'flag': False,
+        'reminder': datetime.datetime.now(),
+        'version': 2,
+        'sync': False,
+        'title': u'Robocat task #2. The Dragon of Krakow',
         'description': u"""This 7 page activity corresponds with the story, The Dragon of Krakow.
 	 The skill asking questions is explored as well as comprehension questions.
-	 https://www.teacherspayteachers.com/Product/The-Dragon-of-Krakow-431206""", 
+	 https://www.teacherspayteachers.com/Product/The-Dragon-of-Krakow-431206""",
     },
     {
         'id': 3,
         'date': datetime.date.today().strftime('%Y-%m-%d'),
-	'time': datetime.datetime.now().strftime('%H:%M:%S'),
-	'color': u'blue',
-	'flag': True,
-	'reminder': datetime.datetime.now(),
-	'version': 2,
-	'sync': True,
-	'title': u'Robocat task #3. The Dragon of Krakow',
+        'time': datetime.datetime.now().strftime('%H:%M:%S'),
+        'color': u'blue',
+        'flag': True,
+        'reminder': datetime.datetime.now(),
+        'version': 2,
+        'sync': True,
+        'title': u'Robocat task #3. The Dragon of Krakow',
         'description': u"""This beautifuuly illustrated story is based on a real family of cats. 
 	 These real life silver tabby & silver spotted characters are now portrayed in a fully illustrated book
 	 suitable for all age groups. There's laughter, danger and romance that will keep you gripped until the very end.
@@ -55,24 +54,25 @@ records = [
     }
 ]
 
+
 @app.route('/memo/api/v1.0/records', methods=['GET'])
 def get_records():
-    # Test it with "curl -i https://robotcat.pythonanywhere.com/memo/api/v1.0/records"	
+    # Test it with "curl -i https://robotcat.pythonanywhere.com/memo/api/v1.0/records"
     return jsonify({'records': records})
+
 
 @app.route('/memo/api/v1.0/records/<int:record_id>', methods=['GET'])
 def get_task(record_id):
     record = [record for record in records if record['id'] == record_id]
-    if len(record) == 0:
+    if not any(record):
         abort(404)
-    return jsonify({'task': task[0]})
-
+    return jsonify({'record': record[0]})
 
 
 @app.route('/')
 def hello_world():
     return 'Hello from RoboCat app!'
 
-if __name__ == "__main__":
-	app.run(debug=True)
 
+if __name__ == "__main__":
+    app.run(debug=True)
