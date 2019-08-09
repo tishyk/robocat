@@ -1,7 +1,7 @@
 # A very simple Flask Hello World app for you to get started with...
 
 import datetime
-from flask import Flask, jsonify, abort
+from flask import Flask, jsonify, abort, make_response, request
 
 app = Flask(__name__)
 
@@ -54,6 +54,9 @@ records = [
     }
 ]
 
+@app.route('/')
+def hello_world():
+    return 'Hello from RoboCat app!'
 
 @app.route('/memo/api/v1.0/records', methods=['GET'])
 def get_records():
@@ -62,17 +65,32 @@ def get_records():
 
 
 @app.route('/memo/api/v1.0/records/<int:record_id>', methods=['GET'])
-def get_task(record_id):
+def get_record(record_id):
     record = [record for record in records if record['id'] == record_id]
     if not any(record):
         abort(404)
     return jsonify({'record': record[0]})
 
 
-@app.route('/')
-def hello_world():
-    return 'Hello from RoboCat app!'
+@app.route('/memo/api/v1.0/records/', methods=['POST'])
+def create_record():
+    if not request.json or not 'date' in request.json:
+        abort(400)
+    record = request.json
+    record['id'] = max(records, key=lambda rec: rec.get('id')) + 1
+    for default_key in records[0]:
+        record.setdefault(default_key, records[0][default_key])
+    return jsonify({'record': record}), 201
 
+
+
+@app.errorhandler(404)
+def not_found(error):
+    return make_response(jsonify({'error': 'Not found'}), 404)
+
+@app.errorhandler(400)
+def request_validation(error):
+    return make_response(jsonify({'error': 'JSON validation failed! {}'.format(error)}), 400)
 
 if __name__ == "__main__":
     app.run(debug=True)
