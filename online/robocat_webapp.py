@@ -54,6 +54,7 @@ records = [
     }
 ]
 
+
 @app.route('/')
 def hello_world():
     return 'Hello from RoboCat app!'
