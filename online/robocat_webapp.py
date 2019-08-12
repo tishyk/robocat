@@ -65,9 +65,10 @@ def get_password(username):
 
 
 def make_public_record(record):
-    record['uri'] = url_for('get_record', record_id=record.get('id', 0), _external=True)
-    record.pop('id')
-    return record
+    uri_record = copy(record)
+    uri_record['uri'] = url_for('get_record', record_id=record.get('id', 0), _external=True)
+    uri_records.pop('id')
+    return uri_record
 
 
 @app.route('/')
