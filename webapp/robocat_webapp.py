@@ -4,7 +4,7 @@ import datetime
 import uploads
 from flask import Flask, jsonify, abort, make_response, request, url_for, redirect, render_template, flash
 from flask_httpauth import HTTPBasicAuth
-
+from werkzeug.utils import secure_filename
 
 UPLOAD_FOLDER = "/home/robotcat/webapp/uploads"
 
