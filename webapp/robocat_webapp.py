@@ -2,15 +2,15 @@
 
 import datetime
 import uploads
-from flask import Flask, jsonify, abort, make_response, request, url_for, redirect, render_template
+from flask import Flask, jsonify, abort, make_response, request, url_for, redirect, render_template, flash
 from flask_httpauth import HTTPBasicAuth
 
 
-UPLOAD_DIR = "/home/robotcat/webapp/downloads"
+UPLOAD_FOLDER = "/home/robotcat/webapp/uploads"
 
 auth = HTTPBasicAuth()
 app = Flask(__name__)
-app.config['UPLOAD_FOLDER'] = UPLOAD_DIR
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['MAX_CONTENT_LENGTH'] = 2 * 1024 * 1024
 
 
@@ -85,8 +85,10 @@ def home():
 @app.route('/', methods=['POST'])
 def home_post():
 	if uploads.upload_files(app, request):
+		flash('File(s) successfully uploaded')
 		return redirect('/')
 	else:
+		flash('No files part')
 		return redirect(request.url)
 
 
