@@ -4,8 +4,13 @@ import datetime
 from flask import Flask, jsonify, abort, make_response, request, url_for
 from flask_httpauth import HTTPBasicAuth
 
+UPLOAD_DIR = "/home/robotcat/webapp/downloads"
+
 auth = HTTPBasicAuth()
 app = Flask(__name__)
+app.config['UPLOAD_FOLDER'] = UPLOAD_DIR
+app.config['MAX_CONTENT_LENGTH'] = 2 * 1024 * 1024
+
 
 records = [
     {
