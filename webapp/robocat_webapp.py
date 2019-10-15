@@ -1,7 +1,7 @@
 # A very simple Flask Hello World app for you to get started with...
 
+import os
 import datetime
-import uploads
 from flask import Flask, jsonify, abort, make_response, request, url_for, redirect, render_template, flash
 from flask_httpauth import HTTPBasicAuth
 from werkzeug.utils import secure_filename
@@ -82,14 +82,23 @@ def make_public_record(record):
 def home():
     return render_template('index.html')
 
+ALLOWED_EXTENSIONS = set(['txt','py', 'pdf', 'png', 'jpg', 'jpeg', 'gif'])
+
+def allowed_file(filename):
+	return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
 @app.route('/', methods=['POST'])
 def home_post():
-	if uploads.upload_files(app, request):
-		flash('File(s) successfully uploaded')
-		return redirect('/')
-	else:
-		flash('No files part')
+	if 'files[]' not in request.files:
+		flash('No file part')
 		return redirect(request.url)
+	files = request.files.getlist('files[]')
+	for file in files:
+		if file and allowed_file(file.filename):
+			filename = secure_filename(file.filename)
+			file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+	flash('File(s) successfully uploaded')
+	return redirect('/')
 
 
 
