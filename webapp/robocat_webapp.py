@@ -84,10 +84,10 @@ def home():
 
 @app.route('/', methods=['POST'])
 def home_post():
-    if uploads.upload_file():
-	return redirect('/')
-    else:
-	return redirect(request.url)
+	if uploads.upload_file():
+		return redirect('/')
+	else:
+		return redirect(request.url)
 
 
 
