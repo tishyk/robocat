@@ -17,4 +17,4 @@ def upload_file(request):
 			filename = secure_filename(file.filename)
 			file.save(os.path.join(app.config['UPLOAD_DIR'], filename))
 	flash('File(s) successfully uploaded')
-	retrun True
+	return True
