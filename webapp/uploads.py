@@ -6,7 +6,7 @@ ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'])
 def allowed_file(filename):
 	return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
-def upload_file(request):
+def upload_files(request):
         # check if the post request has the files part
 	if 'files[]' not in request.files:
 		flash('No file part')
