@@ -9,12 +9,10 @@ def allowed_file(filename):
 def upload_files(app, request):
         # check if the post request has the files part
 	if 'files[]' not in request.files:
-		flash('No file part')
 		return False
 	files = request.files.getlist('files[]')
 	for file in files:
 		if file and allowed_file(file.filename):
 			filename = secure_filename(file.filename)
 			file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-	flash('File(s) successfully uploaded')
 	return True
