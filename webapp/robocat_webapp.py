@@ -1,8 +1,10 @@
 # A very simple Flask Hello World app for you to get started with...
 
 import datetime
+import uploads
 from flask import Flask, jsonify, abort, make_response, request, url_for, redirect, render_template
 from flask_httpauth import HTTPBasicAuth
+
 
 UPLOAD_DIR = "/home/robotcat/webapp/downloads"
 
@@ -77,9 +79,13 @@ def make_public_record(record):
 
 
 @app.route('/')
-def hello_world():
-	
-    return render_template('upload.html')
+def home():
+    return render_template('index.html')
+
+@app.route('/', methods=['POST'])
+def home_post():
+    uploads.upload_file()
+
 
 
 # @app.route('/memo/api/v1.0/records', methods=['GET'])
