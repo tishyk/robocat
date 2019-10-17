@@ -104,7 +104,7 @@ def home_post():
 @app.route('/uploads/<path:filename>')
 def download_file(filename):
     return send_from_directory(app.config['UPLOAD_FOLDER'],
-                               filename, as_attachment=True)
+                               filename)#, as_attachment=True)
 
 # @app.route('/memo/api/v1.0/records', methods=['GET'])
 # def get_records():
