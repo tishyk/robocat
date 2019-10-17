@@ -2,7 +2,8 @@
 
 import os
 import datetime
-from flask import Flask, jsonify, abort, make_response, request, url_for, redirect, render_template, flash
+from flask import Flask, jsonify, abort, make_response, request, url_for, redirect, render_template, flash, \
+    send_from_directory
 from flask_httpauth import HTTPBasicAuth
 from werkzeug.utils import secure_filename
 from copy import copy
@@ -18,8 +19,6 @@ app.config['MAX_CONTENT_LENGTH'] = 2 * 1024 * 1024
 ALLOWED_EXTENSIONS = set(['txt', 'py', 'pdf', 'png', 'jpg', 'jpeg', 'gif'])
 photos = UploadSet('photos', IMAGES)
 configure_uploads(app, photos)
-
-
 
 records = [
     {
@@ -90,6 +89,9 @@ def home():
     return render_template('index.html')
 
 
+ALLOWED_EXTENSIONS = set(['txt', 'py', 'pdf', 'png', 'jpg', 'jpeg', 'gif'])
+
+
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
@@ -106,6 +108,12 @@ def home_post():
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
     flash('File(s) successfully uploaded')
     return redirect('/')
+
+
+@app.route('/uploads/<path:filename>')
+def download_file(filename):
+    return send_from_directory(app.config['UPLOAD_FOLDER'],
+                               filename, as_attachment=True)
 
 
 @app.route('/uploads', methods=['GET', 'POST'])
@@ -202,6 +210,5 @@ def unauthorized():
 def not_found(error):
     return make_response(jsonify({'error': 'Not found'}), 404)
 
-
 if __name__ == "__main__":
-    app.run(host='0.0.0.0', port=8000, debug=True)
+    app.run(debug=True)
