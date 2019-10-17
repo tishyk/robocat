@@ -2,9 +2,12 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>$Title$</title>
+    <title>Uploads</title>
 </head>
 <body>
-$END$
+    <form method=POST enctype=multipart/form-data action="{{ url_for('uploads') }}">
+        <input type=file name="photo">
+        <input type="submit" title="Title">
+    </form>
 </body>
 </html>

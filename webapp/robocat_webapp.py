@@ -5,14 +5,20 @@ import datetime
 from flask import Flask, jsonify, abort, make_response, request, url_for, redirect, render_template, flash
 from flask_httpauth import HTTPBasicAuth
 from werkzeug.utils import secure_filename
-
-UPLOAD_FOLDER = "/home/robotcat/webapp/uploads"
+from copy import copy
+from flask_uploads import UploadSet, configure_uploads, IMAGES, UploadNotAllowed
 
 auth = HTTPBasicAuth()
 app = Flask(__name__)
+UPLOAD_FOLDER = "./uploads"
 app.secret_key = "secret key"
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+app.config['UPLOADED_PHOTOS_DEST'] = 'uploads/img'
 app.config['MAX_CONTENT_LENGTH'] = 2 * 1024 * 1024
+ALLOWED_EXTENSIONS = set(['txt', 'py', 'pdf', 'png', 'jpg', 'jpeg', 'gif'])
+photos = UploadSet('photos', IMAGES)
+configure_uploads(app, photos)
+
 
 
 records = [
@@ -83,24 +89,34 @@ def make_public_record(record):
 def home():
     return render_template('index.html')
 
-ALLOWED_EXTENSIONS = set(['txt','py', 'pdf', 'png', 'jpg', 'jpeg', 'gif'])
 
 def allowed_file(filename):
-	return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
 
 @app.route('/', methods=['POST'])
 def home_post():
-	if 'files[]' not in request.files:
-		flash('No file part')
-		return redirect(request.url)
-	files = request.files.getlist('files[]')
-	for file in files:
-		if file and allowed_file(file.filename):
-			filename = secure_filename(file.filename)
-			file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-	flash('File(s) successfully uploaded')
-	return redirect('/')
+    if 'files[]' not in request.files:
+        flash('No file part')
+        return redirect(request.url)
+    files = request.files.getlist('files[]')
+    for file in files:
+        if file and allowed_file(file.filename):
+            filename = secure_filename(file.filename)
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+    flash('File(s) successfully uploaded')
+    return redirect('/')
 
+
+@app.route('/uploads', methods=['GET', 'POST'])
+def uploads():
+    if request.method == 'POST' and 'photo' in request.files:
+        try:
+            filename = photos.save(request.files['photo'])
+            return str(os.path.join(app.config['UPLOADED_PHOTOS_DEST'], filename))
+        except UploadNotAllowed:
+            return "False"
+    return render_template('uploads.html')
 
 
 # @app.route('/memo/api/v1.0/records', methods=['GET'])
@@ -109,7 +125,7 @@ def home_post():
 #     return jsonify({'records': records})
 
 @app.route('/memo/api/v1.0/records', methods=['GET'])
-@auth.login_required    #curl -u robocat:robocat_password -i https://robotcat.pythonanywhere.com/memo/api/v1.0/records
+@auth.login_required  # curl -u robocat:robocat_password -i https://robotcat.pythonanywhere.com/memo/api/v1.0/records
 def get_records():
     # Test it with "curl -i https://robotcat.pythonanywhere.com/memo/api/v1.0/records"
     return jsonify({'records': [make_public_record(record) for record in records]})
@@ -186,5 +202,6 @@ def unauthorized():
 def not_found(error):
     return make_response(jsonify({'error': 'Not found'}), 404)
 
-    if __name__ == "__main__":
-        app.run(debug=True)
+
+if __name__ == "__main__":
+    app.run(host='0.0.0.0', port=8000, debug=True)
