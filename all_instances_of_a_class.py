@@ -28,12 +28,14 @@ c = MyClass("c")
 del b
 
 for obj in MyClass.getinstances():
-    print obj.name # prints 'a' and 'c'
-An simpler, brute-force approach is to ask the gc module for a list of all known objects, and filter out the objects that belong to the relevant class:
+    print(obj.name) # prints 'a' and 'c'
+    
+    
+# An simpler, brute-force approach is to ask the gc module for a list of all known objects, and filter out the objects that belong to the relevant class:
 
 import gc
 
 for obj in gc.get_objects():
     if isinstance(obj, MyClass):
-        print obj.name
+        print(obj.name)
 However, since an application is likely to have thousands of active objects, this variant isn’t very efficient.
